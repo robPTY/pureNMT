@@ -93,11 +93,10 @@ class Decoder:
             d_embedded = dx[:, :self.embedding_dim] # dL/dEmbeddings
             d_context = dx[:, self.embedding_dim:] # dL/dContext
 
-            d_hidden_next = dprev_hidden
-            d_cell_next = dprev_cell
-
             self.dEmbeddings[token_id] += d_embedded.squeeze()
             dDecoderHidden = self.attention.backward(d_context, encoder_outputs, prev_hidden, alphas, activated)
+            d_hidden_next = dprev_hidden + dDecoderHidden
+            d_cell_next = dprev_cell
 
         return d_cell_next, d_hidden_next
 

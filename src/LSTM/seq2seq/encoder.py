@@ -41,7 +41,7 @@ class Encoder:
             hidden_state = new_hidden
             cell_state = new_cell
         
-        encoder_outputs = torch.stack(all_hidden_states)
+        encoder_outputs = torch.cat(all_hidden_states, dim=0)
 
         return encoder_outputs, hidden_state, cell_state
         
