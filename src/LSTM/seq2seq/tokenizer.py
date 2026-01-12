@@ -1,3 +1,4 @@
+import torch
 import pandas as pd
 from typing import Dict, List, Tuple
 
@@ -18,8 +19,10 @@ class Tokenizer:
     def get_pairs(self, tokens: List[int]) -> Dict:
         pairs = {} 
         for i in range(1, len(tokens)):
-            if tokens[i-1] >= 256 or tokens[i] >= 256:
-                continue    
+            if tokens[i-1] == self.SOS or tokens[i-1] == self.EOS:
+                continue
+            if tokens[i] == self.SOS or tokens[i] == self.EOS:
+                continue
             token_pair = (tokens[i-1], tokens[i])
             pairs[token_pair] = 1 + pairs.get(token_pair, 0)
         return pairs 
@@ -76,3 +79,13 @@ class Tokenizer:
             tokens = self.merge(tokens, pair, new_index)
         
         return tokens
+    
+    def save(self, path: str) -> None:
+        torch.save({'vocab_size': self.vocab_size, 'merges': self.merges}, path)
+    
+    def load(self, path: str) -> None:
+        state = torch.load(path)
+        self.vocab_size = state['vocab_size']
+        self.merges = state['merges']
+        self.SOS = self.vocab_size
+        self.EOS = self.vocab_size + 1
