@@ -1,11 +1,12 @@
 import torch
+from torch import Tensor
 import pandas as pd
 from typing import Tuple, List
 from tokenizer import Tokenizer
 from encoder import Encoder
 from decoder import Decoder
 
-Sets = Tuple[torch.tensor, torch.tensor, torch.tensor, torch.tensor]
+Sets = Tuple[Tensor, Tensor, Tensor, Tensor]
 
 def load_dataset(path: str) -> Sets:
     df = pd.read_csv(path, sep="\t", header=None,
@@ -26,7 +27,7 @@ def load_dataset(path: str) -> Sets:
 
     return X_train, Y_train, X_test, Y_test
 
-def cross_entropy_loss(logits: torch.tensor, target_tokens: List[int]) -> Tuple[float, torch.tensor]:
+def cross_entropy_loss(logits: Tensor, target_tokens: List[int]) -> Tuple[float, Tensor]:
     T = len(target_tokens) - 1
     d_logits = torch.zeros_like(logits)
     total_loss = 0.0

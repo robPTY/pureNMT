@@ -1,7 +1,8 @@
 import torch
+from torch import Tensor
 from typing import Tuple
 
-Attention = Tuple[torch.tensor, torch.tensor, torch.tensor]
+Attention = Tuple[Tensor, Tensor, Tensor]
 
 class BahdanauAttention:
     def __init__(self, hidden_dim: int, attention_dim: int):
@@ -13,16 +14,16 @@ class BahdanauAttention:
         self.dW = torch.zeros_like(self.W)
         self.dU = torch.zeros_like(self.U)
     
-    def score(self, decoder_hidden: torch.tensor, encoder_hidden: torch.tensor) -> Attention:
+    def score(self, decoder_hidden: Tensor, encoder_hidden: Tensor) -> Attention:
         activated = torch.tanh(decoder_hidden @ self.W + encoder_hidden @ self.U)
         scores = activated @ self.V
         alphas = torch.softmax(scores, dim=0)
         context_vector = torch.sum(alphas * encoder_hidden, dim=0, keepdim=True)
         return context_vector, alphas, activated
 
-    def backward(self, d_context: torch.tensor, encoder_hidden: torch.tensor, 
-                decoder_hidden: torch.tensor, alphas: torch.tensor, 
-                activated: torch.tensor) -> torch.tensor:
+    def backward(self, d_context: Tensor, encoder_hidden: Tensor, 
+                decoder_hidden: Tensor, alphas: Tensor, 
+                activated: Tensor) -> Tensor:
         dAlpha = encoder_hidden @ d_context.T # dL/dAlpha (T, hidden) x (hidden, 1) -> (T, 1)
         weighted_sum = (alphas * dAlpha).sum() 
         inner = dAlpha - weighted_sum

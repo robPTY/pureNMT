@@ -1,12 +1,13 @@
 import torch
+from torch import Tensor
 import sys
 sys.path.append('..')
 from gates import ForgetGate, InputGate, CandidateGate, OutputGate
 from activations import Tanh
-from typing import Tuple, List, Dict
+from typing import Tuple, Dict
 
-States = Tuple[torch.tensor, torch.tensor, torch.tensor, torch.tensor, 
-               torch.tensor, torch.tensor, torch.tensor, torch.tensor]
+States = Tuple[Tensor, Tensor, Tensor, Tensor, 
+               Tensor, Tensor, Tensor, Tensor]
 
 # Almost exact same as cell_block.py without the projection layer.
 class S2SCell:
@@ -38,7 +39,7 @@ class S2SCell:
         self.dWo = torch.zeros_like(self.Wo)
         self.dbo = torch.zeros_like(self.bo)
 
-    def forward(self, prev_ct: torch.tensor, prev_h: torch.tensor, x: torch.tensor) -> States:
+    def forward(self, prev_ct: Tensor, prev_h: Tensor, x: Tensor) -> States:
         Xt = torch.cat((x, prev_h), dim=1)
         ft = self.Ft.forward(self.Wf, Xt, self.bf)
 
@@ -58,8 +59,8 @@ class S2SCell:
 
         return Xt, ft, it, ct, ot, tanh_cell_state, cell_state, ht
 
-    def backward(self, states_cache: Dict, dhidden_total: torch.tensor, 
-                 dct_next: torch.tensor) -> Tuple[torch.tensor, torch.tensor, torch.tensor]:
+    def backward(self, states_cache: Dict, dhidden_total: Tensor, 
+                 dct_next: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         # The cache is being accesed at time step t
         Xt = states_cache["Xt"]
         ft, it = states_cache["ft"], states_cache["it"]
@@ -116,7 +117,7 @@ class S2SCell:
         self.Wc -= learning_rate * self.dWc
         self.bc -= learning_rate * self.dbc
 
-    def get_state(self) -> Dict[str, torch.Tensor]:
+    def get_state(self) -> Dict[str, Tensor]:
         return {
             "Wf": self.Wf, "bf": self.bf,
             "Wi": self.Wi, "bi": self.bi,
@@ -124,7 +125,7 @@ class S2SCell:
             "Wo": self.Wo, "bo": self.bo,
         }
 
-    def load_state(self, state: Dict[str, torch.Tensor]) -> None:
+    def load_state(self, state: Dict[str, Tensor]) -> None:
         self.Wf = state["Wf"]
         self.bf = state["bf"]
         self.Wi = state["Wi"]
