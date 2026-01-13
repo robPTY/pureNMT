@@ -1,11 +1,11 @@
 import torch
+from torch import Tensor
 from gates import ForgetGate, InputGate, CandidateGate, OutputGate
 from activations import Tanh
 from typing import Tuple, List, Dict
 
-States = Tuple[torch.tensor, torch.tensor, torch.tensor, torch.tensor, 
-               torch.tensor, torch.tensor, torch.tensor, torch.tensor,
-               torch.tensor]
+States = Tuple[Tensor, Tensor, Tensor, Tensor, Tensor, 
+               Tensor, Tensor, Tensor, Tensor]
 
 class Cell:
     def __init__(self, input_dims, hidden_dims, output_dims):
@@ -40,7 +40,7 @@ class Cell:
         self.by = torch.randn((1, output_dims), generator=gen)
         self.dWy, self.dby = torch.zeros_like(self.Wy), torch.zeros_like(self.by)
 
-    def forward(self, prev_ct: torch.tensor, prev_h: torch.tensor, x: torch.tensor) -> States:
+    def forward(self, prev_ct: Tensor, prev_h: Tensor, x: Tensor) -> States:
         Xt = torch.cat((x, prev_h), dim=1)
         ft = self.Ft.forward(self.Wf, Xt, self.bf)
 
@@ -62,8 +62,8 @@ class Cell:
 
         return Xt, ft, it, ct, ot, tanh_cell_state, cell_state, ht, zt
 
-    def backward(self, states_cache: List[Dict], dZ: torch.tensor, 
-                 dht_next: torch.tensor, dct_next: torch.tensor) -> Tuple[torch.tensor, torch.tensor, torch.tensor]:
+    def backward(self, states_cache: List[Dict], dZ: Tensor, 
+                 dht_next: Tensor, dct_next: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         # The cache is being accesed at time step t
         Xt = states_cache["Xt"]
         ft, it = states_cache["ft"], states_cache["it"]
@@ -130,7 +130,7 @@ class Cell:
         self.Wc -= learning_rate * self.dWc
         self.bc -= learning_rate * self.dbc
 
-    def get_state(self) -> Dict[str, torch.Tensor]:
+    def get_state(self) -> Dict[str, Tensor]:
         return {
             "Wf": self.Wf, "bf": self.bf,
             "Wi": self.Wi, "bi": self.bi,
@@ -139,7 +139,7 @@ class Cell:
             "Wy": self.Wy, "by": self.by,
         }
 
-    def load_state(self, state: Dict[str, torch.Tensor]) -> None:
+    def load_state(self, state: Dict[str, Tensor]) -> None:
         self.Wf = state["Wf"]
         self.bf = state["bf"]
         self.Wi = state["Wi"]

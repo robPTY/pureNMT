@@ -1,4 +1,5 @@
 import torch
+from torch import Tensor
 from cell_block import Cell
 from typing import List
 
@@ -13,7 +14,7 @@ class LSTM:
         self.epochs = epochs
         self.version = curr_version
 
-    def forward(self, x_sequence: torch.tensor):
+    def forward(self, x_sequence: Tensor):
         self.states_cache = [] 
         T = x_sequence.shape[0]
 
@@ -38,7 +39,7 @@ class LSTM:
 
         return z
     
-    def backward(self, dZ: torch.tensor, x_sequence: torch.tensor) -> None:
+    def backward(self, dZ: Tensor, x_sequence: Tensor) -> None:
         T = x_sequence.shape[0]
         next_dht = torch.zeros(1, self.cell_dims) # dL/dHt+1
         next_dcst = torch.zeros(1, self.cell_dims) # dL/dCst+1
@@ -52,14 +53,14 @@ class LSTM:
     def sgd_step(self) -> None:
         self.cell.sgd_step(self.learning_rate)
     
-    def calculate_loss(self, Y_pred: torch.tensor, Y_true: torch.tensor) -> torch.tensor:
+    def calculate_loss(self, Y_pred: Tensor, Y_true: Tensor) -> Tensor:
         N = Y_pred.numel()
         return torch.sum((Y_true - Y_pred)**2) / N
     
     def save_weights(self, path: str) -> None:
         torch.save(self.cell.get_state(), path)
 
-    def sample(self, x_sequence: torch.tensor) -> torch.tensor:
+    def sample(self, x_sequence: Tensor) -> Tensor:
         weights = torch.load(f"weights/lstm_v{self.version}.pt")
         # Update dimensions to match loaded weights
         self.cell_dims = weights["Wf"].shape[1]  # hidden_dims
@@ -69,8 +70,8 @@ class LSTM:
         prediction = self.forward(x_sequence)
         return prediction
 
-    def train(self, X: torch.tensor, Y: torch.tensor, testX: torch.tensor, 
-              testY: torch.tensor) -> List[float]:
+    def train(self, X: Tensor, Y: Tensor, testX: Tensor, 
+              testY: Tensor) -> List[float]:
         losses = [] 
         for e in range(self.epochs):
             epoch_loss = 0.0 
