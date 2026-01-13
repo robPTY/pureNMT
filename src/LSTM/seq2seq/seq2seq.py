@@ -5,12 +5,12 @@ from typing import Tuple, List
 from tokenizer import Tokenizer
 from encoder import Encoder
 from decoder import Decoder
+from src import DATA_DIRECTORY
 
 Sets = Tuple[Tensor, Tensor, Tensor, Tensor]
 
 def load_dataset(path: str) -> Sets:
-    df = pd.read_csv(path, sep="\t", header=None,
-                     names=["english", "spanish", "meta"])
+    df = pd.read_csv(path, sep="\t", header=None, names=["english", "spanish", "meta"])
     df = df[["english", "spanish"]]
 
     Xs = df["english"]
@@ -51,7 +51,7 @@ def cross_entropy_loss(logits: Tensor, target_tokens: List[int]) -> Tuple[float,
 def main():
     VOCAB_SIZE = 8000
     ATTENTION_DIMS = 256 
-    file_path = "data/eng_to_spa.txt"
+    file_path = DATA_DIRECTORY / "eng_to_spa.txt"
     X_train, Y_train, X_test, Y_test = load_dataset(file_path)
     
     shuffle_idx = torch.randperm(len(X_train)).tolist()

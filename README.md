@@ -26,7 +26,7 @@ Implemented 1997 Hochreiter LSTM to predict a an n-length sequence of sun spots 
 
 Full implementation of 2017 Vaswani et al paper. Using this as the starting point for sammy, the ViT.
 
-- [ ] Tokenizer
+- [x] Tokenizer (using the same one as S2S)
 - [ ] Attention
 - [ ] Forward Pass
 - [ ] Backward Pass
@@ -44,3 +44,4 @@ Across this project, I've probably used countless resources, but the most import
 - [2014 Sequence to Sequence Learning with Neural Networks](https://arxiv.org/pdf/1409.3215)
 - [Let's Build the GPT Tokenizer](https://www.youtube.com/watch?v=zduSFxRajkE)
 - [2014 Bahdanau Attention](https://arxiv.org/pdf/1409.0473)
+- [Stanford CME295 Transformers & LLMs](https://www.youtube.com/watch?v=yT84Y5zCnaA)
