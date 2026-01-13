@@ -1,4 +1,5 @@
 import torch
+from torch import Tensor
 from typing import List, Tuple
 from seq2seqcell import S2SCell
 from attention import BahdanauAttention
@@ -20,12 +21,12 @@ class Decoder:
         self.db_out = torch.zeros_like(self.b_out)
         self.states_cache = [] 
     
-    def softmax(self, x: torch.Tensor) -> torch.tensor:
+    def softmax(self, x: Tensor) -> Tensor:
         exp_x = torch.exp(x - torch.max(x, dim=-1, keepdim=True).values)
         return exp_x / torch.sum(exp_x, dim=-1, keepdim=True)
     
-    def forward_step(self, token_id: int, cell_state: torch.tensor, 
-                    hidden_state: torch.tensor, encoder_output: torch.tensor) -> Tuple[torch.tensor, torch.tensor, torch.tensor]:
+    def forward_step(self, token_id: int, cell_state: Tensor, 
+                    hidden_state: Tensor, encoder_output: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         context, alphas, activated = self.attention.score(hidden_state, encoder_output)
         embedded = self.embedding[token_id].view(1, -1)  # (1, embedding_dim)
         cell_input = torch.cat([embedded, context], dim=-1)
@@ -45,8 +46,8 @@ class Decoder:
         
         return logits, new_hidden, new_cell, cache_entry
     
-    def forward(self, encoder_total_hidden: torch.tensor, encoder_hidden: torch.tensor, 
-                target_tokens: List[int], encoder_cell: torch.tensor) -> torch.tensor:
+    def forward(self, encoder_total_hidden: Tensor, encoder_hidden: Tensor, 
+                target_tokens: List[int], encoder_cell: Tensor) -> Tensor:
         self.states_cache = []
         T = len(target_tokens)
 
@@ -65,7 +66,7 @@ class Decoder:
             
         return torch.cat(logits, dim=0)
     
-    def backward(self, d_logits: torch.tensor, encoder_outputs: torch.tensor) -> Tuple[torch.tensor, torch.tensor]:
+    def backward(self, d_logits: Tensor, encoder_outputs: Tensor) -> Tuple[Tensor, Tensor]:
         T = len(self.states_cache)
         d_hidden_next = torch.zeros(1, self.hidden_dim)
         d_cell_next = torch.zeros(1, self.hidden_dim)
@@ -100,8 +101,8 @@ class Decoder:
 
         return d_cell_next, d_hidden_next
 
-    def generate(self, encoder_hidden: torch.tensor, encoder_cell: torch.tensor,
-                 encoder_output: torch.tensor, sos_token: int, eos_token: int, max_length: int = 50) -> List[int]:
+    def generate(self, encoder_hidden: Tensor, encoder_cell: Tensor,
+                 encoder_output: Tensor, sos_token: int, eos_token: int, max_length: int = 50) -> List[int]:
         hidden_state = encoder_hidden
         cell_state = encoder_cell 
 

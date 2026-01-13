@@ -1,4 +1,5 @@
 import torch
+from torch import Tensor
 from typing import List, Tuple
 from seq2seqcell import S2SCell
 
@@ -14,7 +15,7 @@ class Encoder:
         self.states_cache = []
         self.tokens = []
     
-    def encode(self, tokens: List[int]) -> Tuple[torch.tensor, torch.tensor, torch.tensor]:
+    def encode(self, tokens: List[int]) -> Tuple[Tensor, Tensor, Tensor]:
         all_hidden_states = []
         self.states_cache = []
         self.tokens = tokens
@@ -45,7 +46,7 @@ class Encoder:
 
         return encoder_outputs, hidden_state, cell_state
         
-    def backward(self, dhidden: torch.tensor, dcell: torch.tensor) -> None:
+    def backward(self, dhidden: Tensor, dcell: Tensor) -> None:
         T = len(self.states_cache)
         next_dhidden, next_dcell = dhidden, dcell
         
