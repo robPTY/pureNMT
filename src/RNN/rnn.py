@@ -1,8 +1,9 @@
 import torch
+from torch import Tensor
 from typing import Tuple, List
 import torch.nn.functional as F
 
-Gradients = Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
+Gradients = Tuple[Tensor, Tensor, Tensor, Tensor, Tensor]
 
 class RNN:
     def __init__(self, input_dims=1, hidden_dims=2, output_dims=1, epochs=200, learning_rate = 1e-3):
@@ -18,7 +19,7 @@ class RNN:
         self.epochs = epochs
         self.learning_rate = learning_rate
 
-    def forward_pass(self, X_seq: torch.tensor) -> Tuple[torch.tensor, torch.tensor]:
+    def forward_pass(self, X_seq: Tensor) -> Tuple[Tensor, Tensor]:
         previous_hidden = None
         hidden = torch.zeros((X_seq.shape[0], self.InputWeights.shape[1]))
         outputs = torch.zeros((X_seq.shape[0], self.OutputWeights.shape[1]))
@@ -50,7 +51,7 @@ class RNN:
         _, outputs = self.forward_pass(x)
         return outputs[-1].item()
 
-    def backward_pass(self, sequence: torch.tensor, hidden: torch.tensor, dy: torch.tensor) -> Gradients:
+    def backward_pass(self, sequence: Tensor, hidden: Tensor, dy: Tensor) -> Gradients:
         T = hidden.shape[0]
         dWx, dWy = torch.zeros_like(self.InputWeights), torch.zeros_like(self.OutputWeights)
         dWh, dG = torch.zeros_like(self.HiddenWeights), torch.zeros_like(self.HiddenBias)
@@ -82,28 +83,28 @@ class RNN:
 
         return dWy, dB, dWh, dWx, dG
     
-    def sgd_step(self, dWy: torch.tensor, dB: torch.tensor, dWh: torch.tensor, 
-                 dWx: torch.tensor, dG: torch.tensor, learning_rate: float)-> None:
+    def sgd_step(self, dWy: Tensor, dB: Tensor, dWh: Tensor, 
+                 dWx: Tensor, dG: Tensor, learning_rate: float)-> None:
         self.InputWeights -= (learning_rate * dWx)
         self.OutputWeights -= (learning_rate * dWy)
         self.HiddenWeights -= (learning_rate * dWh)
         self.HiddenBias -= (learning_rate * dG)
         self.OutputBias -= (learning_rate * dB)
     
-    def calculate_loss(self, X: torch.tensor, Y: torch.tensor) -> float:
+    def calculate_loss(self, X: Tensor, Y: Tensor) -> float:
         _, outputs = self.forward_pass(X)
         y_pred = outputs[-1]
         loss = 1/2 * (y_pred - Y)**2
         return loss.item()
 
-    def calculate_total_loss(self, X: torch.tensor, Y: torch.tensor) -> float:
+    def calculate_total_loss(self, X: Tensor, Y: Tensor) -> float:
         loss = 0.0
         for i in range(len(Y)):
             loss += self.calculate_loss(X[i], Y[i])
         return loss / float(len(Y))
 
-    def train(self, X: torch.tensor, Y: torch.tensor, X_valid: torch.tensor,
-              Y_valid: torch.tensor) -> List[float]:
+    def train(self, X: Tensor, Y: Tensor, X_valid: Tensor,
+              Y_valid: Tensor) -> List[float]:
         losses = []
         for e in range(self.epochs): # e = number of epoch we are at
             epoch_loss = 0
