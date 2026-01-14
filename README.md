@@ -1,12 +1,12 @@
-# sammy
+# pureNMT
 
-Implementation of Meta's SAM, from scratch.
+This is an NMT model built with only Python and PyTorch tensors (no autograd, no nn.Module). It consists of an encoder-decoder architecture, using LSTMs as the backbone, with Bahdanau attention. All gradients of the LSTM are tested against autograd for correctness.
 
 ## Roadmap
 
 ### RNN
 
-Full implementation of an RNN, using it as the starting point for the LSTM. The LSTM will serve as the transition towards learning Transformers, and then moving onto Vision Transformers (ViTs)
+Full implementation of an RNN, using it as the starting point for the LSTM. The LSTM will serve as the transition towards learning Transformers.
 
 - [x] Forward pass
 - [x] Backward pass
@@ -15,25 +15,17 @@ Full implementation of an RNN, using it as the starting point for the LSTM. The 
 
 ### LSTM
 
-Implemented 1997 Hochreiter LSTM to predict a an n-length sequence of sun spots given an n-length input sequence. Since the results are hard to visualize, I also will implement Seq2Seq for translation between English and Spanish (since I can properly verify this).
+Implemented 1997 Hochreiter LSTM to predict an n-length sequence of sun spots given an n-length input sequence. Since the results are hard to visualize, I also will implement Seq2Seq for translation between English and Spanish (since I can properly verify this).
 
 - [x] Forward pass
 - [x] Backward pass
 - [x] Testing (manual gradients vs. autograd, training loss vs. validation loss)
 - [x] Seq2Seq 2014 Paper Implementation (corpora size of 142,928 words)
-
-### Transformer
-
-Full implementation of 2017 Vaswani et al paper. Using this as the starting point for sammy, the ViT.
-
-- [x] Tokenizer (using the same one as S2S)
-- [ ] Attention
-- [ ] Forward Pass
-- [ ] Backward Pass
+- [x] Bahdanau Attention to improve translation accuracy for larger sentences
 
 ## References
 
-Across this project, I've probably used countless resources, but the most important ones so far
+Across this project, I've probably used countless resources, but the most important ones so far are listed below
 
 ##### ML Concepts
 
@@ -44,4 +36,3 @@ Across this project, I've probably used countless resources, but the most import
 - [2014 Sequence to Sequence Learning with Neural Networks](https://arxiv.org/pdf/1409.3215)
 - [Let's Build the GPT Tokenizer](https://www.youtube.com/watch?v=zduSFxRajkE)
 - [2014 Bahdanau Attention](https://arxiv.org/pdf/1409.0473)
-- [Stanford CME295 Transformers & LLMs](https://www.youtube.com/watch?v=yT84Y5zCnaA)
